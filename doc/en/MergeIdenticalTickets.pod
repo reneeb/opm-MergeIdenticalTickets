@@ -1,0 +1,21 @@
+=head1 NAME
+
+MergeIdenticalTickets
+
+=head1 DESCRIPTION
+
+When you get lots of automatic generated mail, you might want to
+merge those into one ticket. This addon checks for existing
+(open) tickets from the same sender with the same subject and
+the same body and adds the mail as a followup.
+
+=head1 REPOSITORY AND BUGTRACKER
+
+The code repository and a bugtracker is available at
+L<http://github.com/reneeb/otrs-MergeIdenticalTickets>.
+
+=head1 AUTHOR AND LICENSE
+
+This addon is licensed under the terms of AGPL 3.
+
+Renee Baecker, C<< <info@perl-services.de> >>
