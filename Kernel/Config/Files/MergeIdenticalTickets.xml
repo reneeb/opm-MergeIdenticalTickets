@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<otrs_config version="1.0" init="Config">
+    <ConfigItem Name="PostMaster::PostFilterModule###3-Merge" Required="0" Valid="1">
+        <Description Translatable="1">Module to filter and manipulate incoming messages. Merge identical tickets.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Core::PostMaster</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::PostMaster::Filter::MergeIdenticalTickets</Item>
+                <Item Key="Metric">
+                    <Hash>
+                        <Item Key="From">1</Item>
+                        <Item Key="Subject">1</Item>
+                        <Item Key="HTMLBody">1</Item>
+                        <Item Key="Body">1</Item>
+                    </Hash>
+                </Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+</otrs_config>
