@@ -14,6 +14,11 @@ use warnings;
 
 use List::Util qw(first);
 
+our @ObjectDependencies = qw(
+    Kernel::System::Ticket
+    Kernel::System::Log
+);
+
 sub new {
     my ( $Type, %Param ) = @_;
 
@@ -23,21 +28,21 @@ sub new {
 
     $Self->{Debug} = $Param{Debug} || 0;
 
-    # get needed objects
-    for (qw(ConfigObject LogObject DBObject ParserObject TicketObject)) {
-        $Self->{$_} = $Param{$_} || die "Got no $_!";
-    }
-
     return $Self;
 }
 
 sub Run {
     my ( $Self, %Param ) = @_;
 
+    my $LogObject = $Kernel::OM->Get('Kernel::System::Log');
+
     # check needed stuff
-    for (qw(JobConfig GetParam)) {
-        if ( !$Param{$_} ) {
-            $Self->{LogObject}->Log( Priority => 'error', Message => "Need $_!" );
+    for my $Needed (qw(JobConfig GetParam)) {
+        if ( !$Param{$Needed} ) {
+            $LogObject->Log(
+                Priority => 'error',
+                Message => "Need $Needed!",
+            );
             return;
         }
     }
@@ -69,7 +74,8 @@ sub Run {
         $SearchCriteria{Body} = $Mail{Body}
     }
 
-    my @TicketIDs = $Self->{TicketObject}->TicketSearch(
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my @TicketIDs    = $TicketObject->TicketSearch(
         %SearchCriteria,
         Result => 'ARRAY',
         UserID => 1,
@@ -87,18 +93,18 @@ sub Run {
         for my $PossibleTicket ( reverse @TicketIDs ) {
             next POSSIBLETICKET if $PossibleTicket eq $Param{TicketID};
 
-            my %Article = $Self->{TicketObject}->ArticleFirstArticle(
+            my %Article = $TicketObject->ArticleFirstArticle(
                 TicketID => $PossibleTicket,
                 UserID   => 1,
             );
 
-            my %AttachmentIndex = $Self->{TicketObject}->ArticleAttachmentIndex(
+            my %AttachmentIndex = $TicketObject->ArticleAttachmentIndex(
                 ArticleID => $Article{ArticleID},
                 UserID    => 1,
             );
 
             my ($FileID) = first { $AttachmentIndex{$_}->{Filename} eq 'file-2' }keys %AttachmentIndex;
-            my %File     = $Self->{TicketObject}->ArticleAttachment(
+            my %File     = $TicketObject->ArticleAttachment(
                 FileID    => $FileID,
                 ArticleID => $Article{ArticleID},
                 UserID    => 1,
@@ -115,7 +121,7 @@ sub Run {
     }
 
     if ( $TicketID ) {
-        $Self->{TicketObject}->TicketMerge(
+        $TicketObject->TicketMerge(
             MainTicketID  => $TicketID,
             MergeTicketID => $Param{TicketID},
             UserID        => 1,
