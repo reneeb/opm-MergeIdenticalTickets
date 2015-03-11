@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <otrs_package version="1.0">
-    <!-- GENERATED WITH OTRS::OPM::Maker::Command::sopm (1.27) -->
+    <!-- GENERATED WITH OTRS::OPM::Maker::Command::sopm (1.28) -->
     <Name>MergeIdenticalTickets</Name>
-    <Version>4.0.1</Version>
+    <Version>4.0.2</Version>
     <Framework>4.0.x</Framework>
     <Vendor>Perl-Services.de</Vendor>
     <URL>http://www.perl-services.de</URL>
@@ -11,6 +11,7 @@
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
     <Filelist>
         <File Permission="644" Location="Custom/Kernel/System/PostMaster/Filter/MergeIdenticalTickets.pm" />
+        <File Permission="644" Location="Custom/Kernel/System/PostMaster/Filter/MergeIdenticalTicketsPre.pm" />
         <File Permission="644" Location="Kernel/Config/Files/MergeIdenticalTickets.xml" />
         <File Permission="644" Location="doc/MergeIdenticalTickets.json" />
         <File Permission="644" Location="doc/en/MergeIdenticalTickets.pod" />
