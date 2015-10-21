@@ -70,7 +70,8 @@ sub Run {
         $SearchCriteria{Subject} = $Mail{Subject}
     }
 
-    if ( $Metrics{Body} && !$Metrics{HTMLBody} ) {
+    my ($HTMLFile) = first{ $_->{Filename} eq 'file-2' }@{ $Mail{Attachment} || [] };
+    if ( $Metrics{Body} && ( !$Metrics{HTMLBody} || !$HTMLFile ) ) {
         $SearchCriteria{Body} = $Mail{Body}
     }
 
@@ -83,8 +84,7 @@ sub Run {
 
     return 1 if !@TicketIDs;
 
-    my ($TicketID) = first { $_ ne $Param{TicketID} } reverse @TicketIDs;
-    my ($HTMLFile) = first{ $_->{Filename} eq 'file-2' }@{ $Mail{Attachment} || [] };
+    my ($TicketID) = first { $_ ne $Param{TicketID} } reverse sort @TicketIDs;
 
     if ( $Metrics{HTMLBody} && $HTMLFile ) {
         my $Found = 0;
