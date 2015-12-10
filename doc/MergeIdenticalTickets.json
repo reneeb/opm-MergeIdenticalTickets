@@ -1,6 +1,6 @@
 {
     "name": "MergeIdenticalTickets",
-    "version": "5.0.3",
+    "version": "5.0.4",
     "framework": [
         "4.0.x",
         "5.0.x"
