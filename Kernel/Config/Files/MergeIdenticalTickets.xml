@@ -53,7 +53,7 @@
         <Setting>
             <Hash>
                 <Item Key="From">"(.*?)"</Item>
-                <Item Key="Subject">(.*)\|</Item>
+                <Item Key="Subject">\A(.*)(\|)</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -64,7 +64,7 @@
         <Setting>
             <Hash>
                 <Item Key="From">"(.*?)"</Item>
-                <Item Key="Subject">(.*)_</Item>
+                <Item Key="Subject">\A(.*)(_)</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -75,7 +75,7 @@
         <Setting>
             <Hash>
                 <Item Key="From">"(.*?)"</Item>
-                <Item Key="Subject">(.*)_</Item>
+                <Item Key="Subject">\A(.*)(_)</Item>
             </Hash>
         </Setting>
     </ConfigItem>

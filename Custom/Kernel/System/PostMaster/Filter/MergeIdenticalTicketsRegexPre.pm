@@ -16,6 +16,7 @@ use List::Util qw(first);
 
 our @ObjectDependencies = qw(
     Kernel::System::Ticket
+    Kernel::System::Ticket::MITRPSearch
     Kernel::System::Log
     Kernel::System::Main
     Kernel::Config
@@ -38,6 +39,7 @@ sub Run {
     my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $SearchObject = $Kernel::OM->Get('Kernel::System::Ticket::MITRPSearch');
 
     $Self->{Debug} = $ConfigObject->Get('MergeIdenticalTickets::Debug');
 
@@ -75,15 +77,13 @@ sub Run {
 
         for my $RegexKey ( qw/Subject From/ ) {
             if ( defined $RegexDetails{$RegexKey} ) {
-                my $Regex   = $RegexDetails{$RegexKey};
-                my @Matches = $Mail{$RegexKey} =~ m{$Regex}ms;
-
-                my $Found = join '%', @Matches;
+                my $Regex               = $RegexDetails{$RegexKey};
+                my ($Found, $Delimiter) = $Mail{$RegexKey} =~ m{$Regex}ms;
 
                 if ( $Self->{Debug} ) {
                     $LogObject->Log(
                         Priority => 'notice',
-                        Message  => $MainObject->Dump( [ $Mail{$RegexKey}, $Regex, $Found ] ),
+                        Message  => $MainObject->Dump( [ $Mail{$RegexKey}, $Regex, $Found, $Delimiter ] ),
                     );
                 }
 
@@ -93,11 +93,19 @@ sub Run {
                     $Found = '%' . $Found;
                 }
 
+                my $Position = 0;
                 if ( $Regex !~ m{ \\z }xms ) {
                     $Found .= '%';
+                    $Position = 1;
                 }
 
                 $SearchCriteria{$RegexKey} = $Found;
+
+                if ( $Delimiter ) {
+                    my $Value = $Found;
+                    substr $Value, (length( $Value ) - $Position), 0, $Delimiter;
+                    $SearchCriteria{Delimiter} = $Value;
+                }
             }
         }
 
@@ -108,9 +116,8 @@ sub Run {
             );
         }
 
-        my @TicketIDs = $TicketObject->TicketSearch(
+        my @TicketIDs = $SearchObject->Search(
             %SearchCriteria,
-            Result => 'ARRAY',
             UserID => 1,
         );
 

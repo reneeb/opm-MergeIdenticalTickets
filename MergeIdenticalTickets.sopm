@@ -2,7 +2,7 @@
 <otrs_package version="1.0">
     <!-- GENERATED WITH OTRS::OPM::Maker::Command::sopm (1.29) -->
     <Name>MergeIdenticalTickets</Name>
-    <Version>5.0.1</Version>
+    <Version>5.0.2</Version>
     <Framework>4.0.x</Framework>
     <Framework>5.0.x</Framework>
     <Vendor>Perl-Services.de</Vendor>
@@ -13,6 +13,7 @@
     <Filelist>
         <File Permission="644" Location="Custom/Kernel/System/PostMaster/Filter/MergeIdenticalTickets.pm" />
         <File Permission="644" Location="Custom/Kernel/System/PostMaster/Filter/MergeIdenticalTicketsPre.pm" />
+        <File Permission="644" Location="Custom/Kernel/System/PostMaster/Filter/MergeIdenticalTicketsRegexPre.pm" />
         <File Permission="644" Location="Kernel/Config/Files/MergeIdenticalTickets.xml" />
         <File Permission="644" Location="doc/MergeIdenticalTickets.json" />
         <File Permission="644" Location="doc/en/MergeIdenticalTickets.pod" />
