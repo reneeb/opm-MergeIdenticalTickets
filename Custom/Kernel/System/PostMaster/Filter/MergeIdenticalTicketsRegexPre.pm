@@ -103,7 +103,7 @@ sub Run {
 
                 if ( $Delimiter ) {
                     my $Value = $Found;
-                    substr $Value, (length( $Value ) - $Position), 0, $Delimiter;
+                    substr $Value, (length( $Value ) - $Position), 0, sprintf '%s%%%s', $Delimiter, $Delimiter;
                     $SearchCriteria{Delimiter} = $Value;
                 }
             }
