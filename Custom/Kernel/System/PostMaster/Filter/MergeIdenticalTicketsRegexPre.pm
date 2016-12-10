@@ -58,7 +58,7 @@ sub Run {
 
     if ( $Self->{Debug} ) {
         $LogObject->Log(
-            Priority => 'notice',
+            Priority => 'debug',
             Message  => $MainObject->Dump( $Regexes ),
         );
     }
@@ -82,7 +82,7 @@ sub Run {
 
                 if ( $Self->{Debug} ) {
                     $LogObject->Log(
-                        Priority => 'notice',
+                        Priority => 'debug',
                         Message  => $MainObject->Dump( [ $Mail{$RegexKey}, $Regex, $Found, $Delimiter ] ),
                     );
                 }
@@ -111,7 +111,7 @@ sub Run {
 
         if ( $Self->{Debug} ) {
             $LogObject->Log(
-                Priority => 'notice',
+                Priority => 'debug',
                 Message  => $MainObject->Dump( \%SearchCriteria ),
             );
         }
@@ -123,7 +123,7 @@ sub Run {
 
         if ( $Self->{Debug} ) {
             $LogObject->Log(
-                Priority => 'notice',
+                Priority => 'debug',
                 Message  => $MainObject->Dump( \@TicketIDs ),
             );
         }
