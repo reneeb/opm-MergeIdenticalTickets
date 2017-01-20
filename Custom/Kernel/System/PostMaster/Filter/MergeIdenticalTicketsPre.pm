@@ -14,6 +14,8 @@ use warnings;
 
 use List::Util qw(first);
 
+use Kernel::System::EmailParser;
+
 our @ObjectDependencies = qw(
     Kernel::System::Ticket
     Kernel::System::Log
@@ -65,6 +67,16 @@ sub Run {
     my %SearchCriteria = ( StateType => 'Open' );
     if ( $Metrics{From} ) {
         $SearchCriteria{From} = $Mail{From}
+    }
+
+    if ( $Metrics{PlainFrom} ) {
+        my $ParserObject = Kernel::System::EmailParser->new(
+            Mode => 'Standalone',
+        );
+
+        $SearchCriteria{From} = $ParserObject->GetEmailAddress(
+            Email => $Mail{From},
+        );
     }
 
     if ( $Metrics{Subject} ) {

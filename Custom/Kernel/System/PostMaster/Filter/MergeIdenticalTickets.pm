@@ -12,6 +12,8 @@ package Kernel::System::PostMaster::Filter::MergeIdenticalTickets;
 use strict;
 use warnings;
 
+use Kernel::System::EmailParser;
+
 use List::Util qw(first);
 
 our @ObjectDependencies = qw(
@@ -67,6 +69,16 @@ sub Run {
     my %SearchCriteria = ( StateType => 'Open' );
     if ( $Metrics{From} ) {
         $SearchCriteria{From} = $Mail{From}
+    }
+
+    if ( $Metrics{PlainFrom} ) {
+        my $ParserObject = Kernel::System::EmailParser->new(
+            Mode => 'Standalone',
+        );
+
+        $SearchCriteria{From} = $ParserObject->GetEmailAddress(
+            Email => $Mail{From},
+        );
     }
 
     if ( $Metrics{Subject} ) {
