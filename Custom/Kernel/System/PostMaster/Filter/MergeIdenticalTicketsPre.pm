@@ -34,7 +34,8 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $LogObject = $Kernel::OM->Get('Kernel::System::Log');
+    my $LogObject    = $Kernel::OM->Get('Kernel::System::Log');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # check needed stuff
     for my $Needed (qw(JobConfig GetParam)) {

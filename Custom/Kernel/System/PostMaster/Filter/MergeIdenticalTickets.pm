@@ -34,7 +34,10 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $LogObject = $Kernel::OM->Get('Kernel::System::Log');
+    my $LogObject    = $Kernel::OM->Get('Kernel::System::Log');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    my $UserID = $ConfigObject->Get('PostmasterUserID') || 1;
 
     # check needed stuff
     for my $Needed (qw(JobConfig GetParam)) {
@@ -79,7 +82,7 @@ sub Run {
     my @TicketIDs    = $TicketObject->TicketSearch(
         %SearchCriteria,
         Result => 'ARRAY',
-        UserID => 1,
+        UserID => $UserID,
     );
 
     return 1 if !@TicketIDs;
@@ -95,19 +98,19 @@ sub Run {
 
             my %Article = $TicketObject->ArticleFirstArticle(
                 TicketID => $PossibleTicket,
-                UserID   => 1,
+                UserID   => $UserID,
             );
 
             my %AttachmentIndex = $TicketObject->ArticleAttachmentIndex(
                 ArticleID => $Article{ArticleID},
-                UserID    => 1,
+                UserID    => $UserID,
             );
 
             my ($FileID) = first { $AttachmentIndex{$_}->{Filename} eq 'file-2' }keys %AttachmentIndex;
             my %File     = $TicketObject->ArticleAttachment(
                 FileID    => $FileID,
                 ArticleID => $Article{ArticleID},
-                UserID    => 1,
+                UserID    => $UserID,
             );
 
             if ( $File{Content} eq $HTMLFile->{Content} ) {
@@ -124,7 +127,7 @@ sub Run {
         $TicketObject->TicketMerge(
             MainTicketID  => $TicketID,
             MergeTicketID => $Param{TicketID},
-            UserID        => 1,
+            UserID        => $UserID,
         );
     }
 
