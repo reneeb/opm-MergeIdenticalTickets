@@ -1,6 +1,5 @@
 # --
-# Kernel/System/PostMaster/Filter/MergeIdenticalTickets.pm - sub part of PostMaster.pm
-# Copyright (C) 2014 Perl-Services.de, http://perl-services.de
+# Copyright (C) 2014 - 2017 Perl-Services.de, http://perl-services.de
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -18,6 +17,7 @@ use List::Util qw(first);
 
 our @ObjectDependencies = qw(
     Kernel::System::Ticket
+    Kernel::System::Ticket::Article
     Kernel::System::Log
 );
 
@@ -108,21 +108,27 @@ sub Run {
         for my $PossibleTicket ( reverse @TicketIDs ) {
             next POSSIBLETICKET if $PossibleTicket eq $Param{TicketID};
 
-            my %Article = $TicketObject->ArticleFirstArticle(
+            my ($ArticleData) = $ArticleObject->ArticleList(
                 TicketID => $PossibleTicket,
                 UserID   => $UserID,
+                First    => 1,
             );
 
-            my %AttachmentIndex = $TicketObject->ArticleAttachmentIndex(
-                ArticleID => $Article{ArticleID},
-                UserID    => $UserID,
+            my $BackendObject = $ArticleObject->BackendForArticle(
+                ArticleID => $ArticleData->{ArticleID},
+                TicketID  => $PossibleTicket,
+            );
+
+            next POSSIBLETICKET if !$BackendObject->can('ArticleAttachmentIndex');
+
+            my %AttachmentIndex = $BackendObject->ArticleAttachmentIndex(
+                ArticleID => $ArticleData->{ArticleID},
             );
 
             my ($FileID) = first { $AttachmentIndex{$_}->{Filename} eq 'file-2' }keys %AttachmentIndex;
-            my %File     = $TicketObject->ArticleAttachment(
+            my %File     = $BackendObject->ArticleAttachment(
                 FileID    => $FileID,
-                ArticleID => $Article{ArticleID},
-                UserID    => $UserID,
+                ArticleID => $ArticleData->{ArticleID},
             );
 
             if ( $File{Content} eq $HTMLFile->{Content} ) {

@@ -1,6 +1,5 @@
 # --
-# Kernel/System/PostMaster/Filter/MergeIdenticalTicketsRegexPre.pm - sub part of PostMaster.pm
-# Copyright (C) 2015 Perl-Services.de, http://perl-services.de
+# Copyright (C) 2015 - 2017 Perl-Services.de, http://perl-services.de
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -142,31 +141,39 @@ sub Run {
 
             POSSIBLETICKET:
             for my $PossibleTicket ( reverse @TicketIDs ) {
-                my %Article = $TicketObject->ArticleFirstArticle(
+                next POSSIBLETICKET if $PossibleTicket eq $Param{TicketID};
+
+                my ($ArticleData) = $ArticleObject->ArticleList(
                     TicketID => $PossibleTicket,
-                    UserID   => 1,
+                    UserID   => $UserID,
+                    First    => 1,
                 );
 
-                my %AttachmentIndex = $TicketObject->ArticleAttachmentIndex(
-                    ArticleID => $Article{ArticleID},
-                    UserID    => 1,
+                my $BackendObject = $ArticleObject->BackendForArticle(
+                    ArticleID => $ArticleData->{ArticleID},
+                    TicketID  => $PossibleTicket,
+                );
+
+                next POSSIBLETICKET if !$BackendObject->can('ArticleAttachmentIndex');
+
+                my %AttachmentIndex = $BackendObject->ArticleAttachmentIndex(
+                    ArticleID => $ArticleData->{ArticleID},
                 );
 
                 my ($FileID) = first { $AttachmentIndex{$_}->{Filename} eq 'file-2' }keys %AttachmentIndex;
-                my %File     = $TicketObject->ArticleAttachment(
+                my %File     = $BackendObject->ArticleAttachment(
                     FileID    => $FileID,
-                    ArticleID => $Article{ArticleID},
-                    UserID    => 1,
+                    ArticleID => $ArticleData->{ArticleID},
                 );
 
-                if ( $File{Content} =~ m{\Q$BodyMatch\E}ms ) {
+                if ( $File{Content} eq $HTMLFile->{Content} ) {
                     $Found++;
                     $TicketID = $PossibleTicket;
                     last POSSIBLETICKET;
                 }
-
-                $TicketID = undef if !$Found;
             }
+
+            $TicketID = undef if !$Found;
         }
 
         if ( $TicketID ) {
