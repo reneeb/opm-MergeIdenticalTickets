@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2001-2015 OTRS AG, http://otrs.com/
+# Copyright (C) 2015-2017 Perl-Services.de, http://perl-services.de
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you
@@ -38,6 +38,8 @@ sub new {
 
     return $Self;
 }
+
+=item TicketSearch {
 
 =item Search()
 
@@ -88,7 +90,8 @@ sub Search {
         SELECT DISTINCT st.id, st.tn
         FROM ticket st
             INNER JOIN queue sq ON sq.id = st.queue_id
-            INNER JOIN article a ON st.id = a.ticket_id
+            INNER JOIN article at ON st.id = at.ticket_id
+            INNER JOIN article_data_mime a ON at.id = a.article_id
         WHERE 1=1
     ~;
 
@@ -100,20 +103,22 @@ sub Search {
 
     push @Where, " AND st.ticket_state_id IN ( " . (join ', ', sort {$a <=> $b} @ViewableStateIDs) . ") ";
 
+    my $OP = $Param{Exact} ? '=' : 'LIKE';
+
     # article search criteria
     my @Bind;
     if ( $Param{From} ) {
         push @Bind, \$Param{From};
-        push @Where, ' a.a_from LIKE ?';
+        push @Where, " a.a_from $OP ?";
     }
 
     if ( $Param{Subject} ) {
         push @Bind, \$Param{Subject};
-        push @Where, ' a.a_subject LIKE ?';
+        push @Where, " a.a_subject $OP ?";
 
         if ( $Param{Delimiter} ) {
             push @Bind, \$Param{Delimiter};
-            push @Where, ' a.a_subject NOT LIKE ?';
+            push @Where, " a.a_subject NOT $OP ?";
         }
     }
 
@@ -142,6 +147,8 @@ sub Search {
 
     my $Where = !@Where ? '' : join ' AND ', @Where;
     $SQLSelect .= $Where;
+
+$Kernel::OM->Get('Kernel::System::Log')->Log( Priority => error => Message => $SQLSelect );
 
     # database query
     my @TicketIDs;

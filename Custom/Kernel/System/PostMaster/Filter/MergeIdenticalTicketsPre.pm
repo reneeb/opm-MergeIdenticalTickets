@@ -16,7 +16,10 @@ use List::Util qw(first);
 use Kernel::System::EmailParser;
 
 our @ObjectDependencies = qw(
+    Kernel::Config
     Kernel::System::Ticket
+    Kernel::System::Ticket::Article
+    Kernel::System::Ticket::MITRPSearch
     Kernel::System::Log
 );
 
@@ -29,14 +32,29 @@ sub new {
 
     $Self->{Debug} = $Param{Debug} || 0;
 
+    # get communication log object and MessageID
+    $Self->{CommunicationLogObject} = $Param{CommunicationLogObject} || die "Got no CommunicationLogObject!";
+
     return $Self;
 }
 
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $LogObject    = $Kernel::OM->Get('Kernel::System::Log');
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $LogObject     = $Kernel::OM->Get('Kernel::System::Log');
+    my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+    my $SearchObject  = $Kernel::OM->Get('Kernel::System::Ticket::MITRPSearch');
+
+    my $UserID = $ConfigObject->Get('PostmasterUserID') || 1;
+
+    $Self->{CommunicationLogObject}->ObjectLog(
+        ObjectLogType => 'Message',
+        Priority      => 'Debug',
+        Key           => __PACKAGE__,
+        Value         => "Starting filter " . __PACKAGE__,
+    );
 
     # check needed stuff
     for my $Needed (qw(JobConfig GetParam)) {
@@ -87,11 +105,10 @@ sub Run {
         $SearchCriteria{Body} = $Mail{Body}
     }
 
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-    my @TicketIDs    = $TicketObject->TicketSearch(
+    my @TicketIDs = $SearchObject->Search(
         %SearchCriteria,
-        Result => 'ARRAY',
-        UserID => 1,
+        UserID => $Param{UserID} // 1,
+        Exact => 1,
     );
 
     return 1 if !@TicketIDs;
@@ -150,6 +167,13 @@ sub Run {
             Subject      => $Mail{Subject},
             Type         => 'New',
             NoCleanUp    => 1,
+        );
+
+        $Self->{CommunicationLogObject}->ObjectLog(
+            ObjectLogType => 'Message',
+            Priority      => 'Debug',
+            Key           => __PACKAGE__,
+            Value         => "Set subject to " . $Param{GetParam}->{Subject},
         );
     }
 

@@ -2,7 +2,7 @@
 <otrs_config version="2.0" init="Config">
     <Setting Name="PostMaster::PostFilterModule###3-Merge" Required="0" Valid="1">
         <Description Translatable="1">Module to filter and manipulate incoming messages. Merge identical tickets.</Description>
-        <Navigation>Core::Email::PostMaster</Navigation>
+        <Navigation>OPAR::MergeIdenticalTickets::Core::Email::PostMaster</Navigation>
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::System::PostMaster::Filter::MergeIdenticalTickets</Item>
@@ -19,7 +19,7 @@
     </Setting>
     <Setting Name="PostMaster::PreFilterModule###3-Merge" Required="0" Valid="0">
         <Description Translatable="1">Module to filter and manipulate incoming messages. Merge identical tickets.</Description>
-        <Navigation>Core::Email::PostMaster</Navigation>
+        <Navigation>OPAR::MergeIdenticalTickets::Core::Email::PostMaster</Navigation>
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::System::PostMaster::Filter::MergeIdenticalTicketsPre</Item>
@@ -36,7 +36,7 @@
     </Setting>
     <Setting Name="PostMaster::PreFilterModule###4-MergeByRegex" Required="0" Valid="0">
         <Description Translatable="1">Module to filter and manipulate incoming messages. Merge identical tickets.</Description>
-        <Navigation>Core::Email::PostMaster</Navigation>
+        <Navigation>OPAR::MergeIdenticalTickets::Core::Email::PostMaster</Navigation>
         <Value>
             <Hash>
                 <Item Key="Module">Kernel::System::PostMaster::Filter::MergeIdenticalTicketsRegexPre</Item>
@@ -45,7 +45,7 @@
     </Setting>
     <Setting Name="MergeIdenticalTickets::Regex###1-Sample1" Required="0" Valid="0">
         <Description Translatable="1">Define regex based decision.</Description>
-        <Navigation>Regexes</Navigation>
+        <Navigation>OPAR::MergeIdenticalTickets::Regexes</Navigation>
         <Value>
             <Hash>
                 <Item Key="From">"(.*?)"</Item>
@@ -55,7 +55,7 @@
     </Setting>
     <Setting Name="MergeIdenticalTickets::Regex###2-Sample2" Required="0" Valid="0">
         <Description Translatable="1">Define regex based decision.</Description>
-        <Navigation>Regexes</Navigation>
+        <Navigation>OPAR::MergeIdenticalTickets::Regexes</Navigation>
         <Value>
             <Hash>
                 <Item Key="From">"(.*?)"</Item>
@@ -65,7 +65,7 @@
     </Setting>
     <Setting Name="MergeIdenticalTickets::Regex###3-Sample3" Required="0" Valid="0">
         <Description Translatable="1">Define regex based decision.</Description>
-        <Navigation>Regexes</Navigation>
+        <Navigation>OPAR::MergeIdenticalTickets::Regexes</Navigation>
         <Value>
             <Hash>
                 <Item Key="From">"(.*?)"</Item>
@@ -75,7 +75,7 @@
     </Setting>
     <Setting Name="MergeIdenticalTickets::Debug" Required="0" Valid="1">
         <Description Translatable="1">Enable/Disable debugging feature.</Description>
-        <Navigation>Core</Navigation>
+        <Navigation>OPAR::MergeIdenticalTickets::Core</Navigation>
         <Value>
             <Item ValueType="Checkbox">0</Item>
         </Value>

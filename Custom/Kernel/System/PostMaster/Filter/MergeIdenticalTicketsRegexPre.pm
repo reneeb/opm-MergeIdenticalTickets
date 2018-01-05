@@ -15,6 +15,7 @@ use List::Util qw(first);
 
 our @ObjectDependencies = qw(
     Kernel::System::Ticket
+    Kernel::System::Ticket::Article
     Kernel::System::Ticket::MITRPSearch
     Kernel::System::Log
     Kernel::System::Main
@@ -28,19 +29,32 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
+    # get communication log object and MessageID
+    $Self->{CommunicationLogObject} = $Param{CommunicationLogObject} || die "Got no CommunicationLogObject!";
+
     return $Self;
 }
 
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $LogObject    = $Kernel::OM->Get('Kernel::System::Log');
-    my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-    my $SearchObject = $Kernel::OM->Get('Kernel::System::Ticket::MITRPSearch');
+    my $LogObject     = $Kernel::OM->Get('Kernel::System::Log');
+    my $MainObject    = $Kernel::OM->Get('Kernel::System::Main');
+    my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+    my $SearchObject  = $Kernel::OM->Get('Kernel::System::Ticket::MITRPSearch');
 
     $Self->{Debug} = $ConfigObject->Get('MergeIdenticalTickets::Debug');
+
+    my $UserID = $ConfigObject->Get('PostmasterUserID') || 1;
+
+    $Self->{CommunicationLogObject}->ObjectLog(
+        ObjectLogType => 'Message',
+        Priority      => 'Debug',
+        Key           => __PACKAGE__,
+        Value         => "Starting filter " . __PACKAGE__,
+    );
 
     # check needed stuff
     for my $Needed (qw(JobConfig GetParam)) {
@@ -187,6 +201,13 @@ sub Run {
                 Subject      => $Mail{Subject},
                 Type         => 'New',
                 NoCleanUp    => 1,
+            );
+
+            $Self->{CommunicationLogObject}->ObjectLog(
+                ObjectLogType => 'Message',
+                Priority      => 'Debug',
+                Key           => __PACKAGE__,
+                Value         => "Set subject to " . $Param{GetParam}->{Subject},
             );
 
             last KEY;

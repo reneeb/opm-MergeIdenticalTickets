@@ -16,9 +16,11 @@ use Kernel::System::EmailParser;
 use List::Util qw(first);
 
 our @ObjectDependencies = qw(
-    Kernel::System::Ticket
+    Kernel::Config
     Kernel::System::Ticket::Article
     Kernel::System::Log
+    Kernel::System::Main
+    Kernel::System::Ticket::MITRPSearch
 );
 
 sub new {
@@ -30,16 +32,29 @@ sub new {
 
     $Self->{Debug} = $Param{Debug} || 0;
 
+    # get communication log object and MessageID
+    $Self->{CommunicationLogObject} = $Param{CommunicationLogObject} || die "Got no CommunicationLogObject!";
+
     return $Self;
 }
 
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $LogObject    = $Kernel::OM->Get('Kernel::System::Log');
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $LogObject     = $Kernel::OM->Get('Kernel::System::Log');
+    my $MainObject    = $Kernel::OM->Get('Kernel::System::Main');
+    my $ConfigObject  = $Kernel::OM->Get('Kernel::Config');
+    my $ArticleObject = $Kernel::OM->Get('Kernel::System::Ticket::Article');
+    my $SearchObject  = $Kernel::OM->Get('Kernel::System::Ticket::MITRPSearch');
 
     my $UserID = $ConfigObject->Get('PostmasterUserID') || 1;
+
+    $Self->{CommunicationLogObject}->ObjectLog(
+        ObjectLogType => 'Message',
+        Priority      => 'Debug',
+        Key           => __PACKAGE__,
+        Value         => "Starting filter " . __PACKAGE__,
+    );
 
     # check needed stuff
     for my $Needed (qw(JobConfig GetParam)) {
@@ -68,7 +83,7 @@ sub Run {
 
     my %SearchCriteria = ( StateType => 'Open' );
     if ( $Metrics{From} ) {
-        $SearchCriteria{From} = $Mail{From}
+        $SearchCriteria{From} = $Mail{From};
     }
 
     if ( $Metrics{PlainFrom} ) {
@@ -91,10 +106,10 @@ sub Run {
     }
 
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-    my @TicketIDs    = $TicketObject->TicketSearch(
+    my @TicketIDs    = $SearchObject->Search(
         %SearchCriteria,
-        Result => 'ARRAY',
         UserID => $UserID,
+        Exact  => 1,
     );
 
     return 1 if !@TicketIDs;
@@ -142,6 +157,13 @@ sub Run {
     }
 
     if ( $TicketID ) {
+        $Self->{CommunicationLogObject}->ObjectLog(
+            ObjectLogType => 'Message',
+            Priority      => 'Debug',
+            Key           => __PACKAGE__,
+            Value         => "Merge with ticket $TicketID",
+        );
+
         $TicketObject->TicketMerge(
             MainTicketID  => $TicketID,
             MergeTicketID => $Param{TicketID},
