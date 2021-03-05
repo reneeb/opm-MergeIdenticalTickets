@@ -1,5 +1,5 @@
 # --
-# Copyright (C) 2015-2017 Perl-Services.de, http://perl-services.de
+# Copyright (C) 2015 - 2021 Perl-Services.de, http://perl-services.de
 # --
 # This software comes with ABSOLUTELY NO WARRANTY. For details, see
 # the enclosed file COPYING for license information (AGPL). If you

@@ -1,9 +1,10 @@
 {
     "name": "MergeIdenticalTickets",
-    "version": "6.0.1",
+    "version": "10.0.1",
     "framework": [
-        "6.0.x"
+        "10.0.x"
     ],
+    "product": "otobo",
     "vendor": {
         "name":  "Perl-Services.de",
         "url": "http://www.perl-services.de"

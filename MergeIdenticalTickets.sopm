@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<otrs_package version="1.0">
-    <!-- GENERATED WITH OTRS::OPM::Maker::Command::sopm (1.4) -->
+<otobo_package version="1.0">
+    <!-- GENERATED WITH OTRS::OPM::Maker::Command::sopm (1.44) -->
     <Name>MergeIdenticalTickets</Name>
-    <Version>6.0.1</Version>
-    <Framework>6.0.x</Framework>
+    <Version>10.0.1</Version>
+    <Framework>10.0.x</Framework>
     <Vendor>Perl-Services.de</Vendor>
     <URL>http://www.perl-services.de</URL>
     <Description Lang="de">Führt identische Tickets zusammen (basierend auf Absender, Betreff und (Plain-/HTML-)Text der Mail)</Description>
@@ -18,4 +18,4 @@
         <File Permission="644" Location="doc/MergeIdenticalTickets.json" />
         <File Permission="644" Location="doc/en/MergeIdenticalTickets.pod" />
     </Filelist>
-</otrs_package>
+</otobo_package>
