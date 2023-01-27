@@ -148,8 +148,6 @@ sub Search {
     my $Where = !@Where ? '' : join ' AND ', @Where;
     $SQLSelect .= $Where;
 
-$Kernel::OM->Get('Kernel::System::Log')->Log( Priority => error => Message => $SQLSelect );
-
     # database query
     my @TicketIDs;
     return if !$DBObject->Prepare(
