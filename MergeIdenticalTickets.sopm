@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <otrs_package version="1.0">
-    <!-- GENERATED WITH OTRS::OPM::Maker::Command::sopm (1.4) -->
+    <!-- GENERATED WITH OPM::Maker::Command::sopm (1.1.0) -->
     <Name>MergeIdenticalTickets</Name>
-    <Version>6.0.1</Version>
+    <Version>6.0.2</Version>
     <Framework>6.0.x</Framework>
+    <Framework>6.1.x</Framework>
+    <Framework>6.2.x</Framework>
+    <Framework>6.3.x</Framework>
+    <Framework>6.4.x</Framework>
     <Vendor>Perl-Services.de</Vendor>
-    <URL>http://www.perl-services.de</URL>
+    <URL>https://www.perl-services.de</URL>
     <Description Lang="de">Führt identische Tickets zusammen (basierend auf Absender, Betreff und (Plain-/HTML-)Text der Mail)</Description>
     <Description Lang="en">Merge Tickets that are identical (based on sender, subject and (plain-/html-)body of the mail)</Description>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
